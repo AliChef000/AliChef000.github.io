@@ -118,7 +118,7 @@
       var query = new widgets.query(`
       query ($dateFormat: String!)  
       {ethereum(network:bsc){
-  dexTrades(date:{since:"2020-09-24"}){
+  dexTrades(date:{since:"2020-11-01"}){
   Pancake:count(uniq:senders,exchangeName:{is:"Pancake"})
   Others:count(uniq:senders,exchangeName:{not:"Pancake"})
     date:date{dt:date(format:$dateFormat)}
@@ -265,7 +265,7 @@ date:date{dt:date(format:$dateFormat)}
       smartContractEvent: {in: ["Mint","Burn"]}
       date:{since:"2020-11-01"}
     ) {
-      date:date{date(format:$dateFormat)}
+      date:date{dt:date(format:$dateFormat)}
    Mint:count(uniq: callers,smartContractEvent:{is:"Mint"})
  Burn:count(uniq: callers,smartContractEvent:{is:"Burn"})
       
@@ -304,7 +304,7 @@ date:date{dt:date(format:$dateFormat)}
                 label: "Date",
                 type: "date",
               },
-              path: "date.date",
+              path: "date.dt",
             },
             {
               title: "Liquidity Adder",
@@ -521,7 +521,7 @@ dateFormat:"%Y-%m-%d"
       smartContractEvent: {in:["Deposit","Withdraw"]}
       date: {since: "2020-11-01"}
     ) {
-      date:date{date(format:$dateFormat)}
+      date:date{dt:date(format:$dateFormat)}
      Mint:count(uniq: callers,smartContractEvent:{is:"Deposit"})
      Burn:count(uniq: callers,smartContractEvent:{is:"Withdraw"})
     }
@@ -555,7 +555,7 @@ dateFormat:"%Y-%m-%d"
   {
    "title": "Date",
     "type": "date",
-   "path": "date.date"
+   "path": "date.dt"
   },
   {
    "title": "Liquidity Adder",
