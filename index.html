@@ -17,7 +17,8 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5.19.1"
             integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
             crossorigin="anonymous"
-    ></script>
+    ></script>  
+    <script src="https://cdn.jsdelivr.net/npm/@bitquery/ide-charts@2.0.1/dist/timeChartRenderer.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -56,29 +57,33 @@
         </div>
       </div>
       <div class="row" style="margin-top:20px; margin-bottom:20px">
-	      <div class="col-md-12">
+	      <div class="col-md-6">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
 		        Daily Transactions
 	        </div>  
 	        <div id="trans_count_by_time"></div>
 	      </div>	
+        <div class="col-md-6">
+          <div class="d-flex justify-content-center" style="font-weight: bold;">
+            Daily Trading Volume
+          </div>
+          <div id="volume_by_time"></div>
+        </div>
       </div>
       <div class="row" style="margin-top:20px; margin-bottom:20px">
-        <div class="col-md-12">
+        <div class="col-md-6">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
             Daily LP Pool Liquidity Activity
           </div>
           <div id="lp_liquidity_activity"></div>
         </div>
-      </div>
-      <div class="row" style="margin-top:20px; margin-bottom:20px">
-	      <div class="col-md-12">
+	      <div class="col-md-6">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
 	          Daily Syrup Pool Liquidity Activiey
           </div>
 	        <div id="syrup_liquidity_activity"></div>
         </div>
-      </div>  
+      </div>
       <div class="row" style="margin-top:20px; margin-bottom:20px">
         <div class="col-md-12">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
@@ -118,7 +123,7 @@
       var query = new widgets.query(`
       query ($dateFormat: String!)  
       {ethereum(network:bsc){
-  dexTrades(date:{since:"2020-11-01"}){
+  dexTrades(date:{since:"2020-09-24"}){
   Pancake:count(uniq:senders,exchangeName:{is:"Pancake"})
   Others:count(uniq:senders,exchangeName:{not:"Pancake"})
     date:date{dt:date(format:$dateFormat)}
@@ -142,11 +147,17 @@
             series: {
               "0": {
                 color: "#ffc107",
-		lineWidth:"2"
+                lineWidth:2,
+                pointsVisible:false,
+                pointShape:"round",
+                pointSize:3
               },
               "1":{
                 color:"#28a745",
-		lineWidth:"2"
+                lineWidth:2,
+                pointsVisible:false,
+                pointSize:"round",
+                pointSize:3
               }
             },
             seriesType: "lines",
@@ -181,16 +192,15 @@
     var query = new widgets.query(`
 
 
- query($dateFormat:String!)
+    query($dateFormat:String!)
 {ethereum(network:bsc){
   smartContractCalls(
-    date:{since:"2020-11-01"}
-    smartContractAddress:{is:"0xbcfccbde45ce874adcb698cc183debcf17952812"}
+    date:{since:"2020-12-01"}
   )
   {
 date:date{dt:date(format:$dateFormat)}
-   caller: count(uniq:callers)
-    transactions:count(uniq:calls)
+  Pancake: count(smartContractAddress:{is:"0xbcfccbde45ce874adcb698cc183debcf17952812"})
+  caller:count(uniq:callers)
     }
   }}
 
@@ -200,11 +210,11 @@ date:date{dt:date(format:$dateFormat)}
  "chartOptions": {
   "vAxes": {
    "0": {
-    "title": "Uniq Address",
+    "title": "Pancake Transactions",
     "scaleType": "linear"
    },
    "1": {
-    "title": "Transactions",
+    "title": "Callers",
     "scaleType": "linear"
    },
   },
@@ -212,11 +222,11 @@ date:date{dt:date(format:$dateFormat)}
    "0": {
     "color": "#ffc107",
     "barWidth":"2",
-    "pointsVisible":false,
-    "pointShape":"diamond",
+    "pointsVisible":true,
+    "pointShape":"round",
     "pointSize":"3",
     "targetAxisIndex": 0,
-    "type":"bars"
+    "type":"line"
    },
    "1": {
     "color": "#28a745",
@@ -225,7 +235,7 @@ date:date{dt:date(format:$dateFormat)}
     "pointShape":"diamond",
     "pointSize":"3",
     targetAxisIndex: 1,
-    "type":"lines"
+    "type":"area"
    },
   },
   "seriesType": "line"
@@ -239,12 +249,12 @@ date:date{dt:date(format:$dateFormat)}
             },
   
   {
-   "title": "Callers",
-   "path": "caller",
+   "title": "Pancake Transactions",
+   "path": "Pancake",
   },
   {
-   "title": "Transactions",
-   "path": "transactions"
+   "title": "Daily Callers",
+   "path": "caller"
   },
  ]
 });
@@ -252,6 +262,51 @@ date:date{dt:date(format:$dateFormat)}
                   "%Y-%m-%d"});
     })();
 	</script>
+  <script>
+     (function(){
+    widgets.init('https://graphql.bitquery.io', '', {locale: 'en', theme: 'light'});
+    var query = new widgets.query(`
+
+
+query($dateFormat:String!)
+{ethereum(network:bsc){
+  dexTrades(exchangeName:{is:"Pancake"}
+  date:{since:"2020-12-01"}){
+    date:date{date(format:$dateFormat)}
+    tradeAmount(in:USD)
+  }
+}}
+
+`);
+    var wdts = new widgets.chart('#volume_by_time', query, 'ethereum.dexTrades', {
+ "title": "Transactions",
+ "chartOptions": {
+  "vAxes": {
+   "0": {
+    "title": "Trade Amount",
+    "scaleType": "linear"
+   },
+  },
+  "seriesType": "area"
+ },
+ "dataOptions": [
+ {
+              title: 
+              {label:"Date",
+                type: "date"},
+              path: "date.date",
+            },
+  {
+   "title": "Trade Volume",
+   "path": "tradeAmount"
+  }
+ 
+ ]
+});
+    query.request({dateFormat:"%Y-%m-%d"
+  });
+    })();
+  </script>
   <script>
     (function() {
       widgets.init("https://graphql.bitquery.io", "", {
@@ -267,7 +322,7 @@ date:date{dt:date(format:$dateFormat)}
       smartContractEvent: {in: ["Mint","Burn"]}
       date:{since:"2020-11-01"}
     ) {
-      date:date{dt:date(format:$dateFormat)}
+      date:date{date(format:$dateFormat)}
    Mint:count(uniq: callers,smartContractEvent:{is:"Mint"})
  Burn:count(uniq: callers,smartContractEvent:{is:"Burn"})
       
@@ -306,7 +361,7 @@ date:date{dt:date(format:$dateFormat)}
                 label: "Date",
                 type: "date",
               },
-              path: "date.dt",
+              path: "date.date",
             },
             {
               title: "Liquidity Adder",
@@ -554,11 +609,13 @@ dateFormat:"%Y-%m-%d"
   "seriesType": "area"
  },
  "dataOptions": [
-  {
-   "title": "Date",
-    "type": "date",
-   "path": "date.dt"
-  },
+ {
+              title: {
+                label: "Date",
+                type: "date",
+              },
+              path: "date.dt",
+            },
   {
    "title": "Liquidity Adder",
    "path": "Mint"
@@ -586,7 +643,7 @@ dateFormat:"%Y-%m-%d"
     dexTrades(
     date: {after: "2020-12-01"}) {
       
-			date:date{date(format:$dateFormat)}
+			date:date{dt:date(format:$dateFormat)}
       
       exchange {
         fullName
@@ -627,9 +684,10 @@ var wdts = new widgets.pivotChart('#gas_fee_contribution_by_exchange', query, 'e
  ],
  "rows": [
   {
-   "title": "Date",
-   "path": "date.date"
-  }
+    title: "Date",
+    type: "date",
+    path: "date.dt",
+            },
  ],
  "sort": {
   "metric": "Gas",
@@ -638,7 +696,9 @@ var wdts = new widgets.pivotChart('#gas_fee_contribution_by_exchange', query, 'e
  },
  "limit": {}
 });
-    query.request({"dateFormat": "%Y-%m-%d"});
+    query.request({
+      dateFormat:"%Y-%m-%d"
+    });
     })()
 </script>
   <script>
