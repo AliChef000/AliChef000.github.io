@@ -14,7 +14,10 @@
       crossorigin="anonymous"
     />
     <script src="https://cdn.jsdelivr.net/gh/bitquery/widgets@v1.3.8/dist/widgets.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega@5.19.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.19.1"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"
+    ></script>
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -45,41 +48,47 @@
         </div>
       </div>
       <div class="row" style="margin-top:20px; margin-bottom:20px">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
             Daily Active Address 
           </div>
           <div id="active_address_by_time"></div>
         </div>
-	<div class="col-md-6">
+      </div>
+      <div class="row" style="margin-top:20px; margin-bottom:20px">
+	      <div class="col-md-12">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
-		  Daily Transactions
-	  </div>  
-	  <div id="trans_count_by_time"></div>
-	</div>	
-        <div class="col-md-6">
+		        Daily Transactions
+	        </div>  
+	        <div id="trans_count_by_time"></div>
+	      </div>	
+      </div>
+      <div class="row" style="margin-top:20px; margin-bottom:20px">
+        <div class="col-md-12">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
             Daily LP Pool Liquidity Activity
           </div>
           <div id="lp_liquidity_activity"></div>
         </div>
       </div>
-	<div class="col-md-6">
+      <div class="row" style="margin-top:20px; margin-bottom:20px">
+	      <div class="col-md-12">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
-	     Daily Syrup Pool Liquidity Activiey
+	          Daily Syrup Pool Liquidity Activiey
           </div>
-	  <div id="syrup_liquidity_activity"></div>
+	        <div id="syrup_liquidity_activity"></div>
         </div>
       </div>  
       <div class="row" style="margin-top:20px; margin-bottom:20px">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
             DexTrades GAS Fee Contribution (BNB)
           </div>
-
           <div id="gas_fee_contribution_by_exchange"></div>
         </div>
-        <div class="col-md-6">
+      </div>
+      <div class="row" style="margin-top:20px; margin-bottom:20px">
+        <div class="col-md-12">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
             Gas Price By Date ( Median, Average, Maximum) in Log scale, GWei
           </div>
@@ -165,9 +174,11 @@
     })();
   </script>
 <script>
-(function(){
+ (function(){
     widgets.init('https://graphql.bitquery.io', '', {locale: 'en', theme: 'light'});
     var query = new widgets.query(`
+
+
  query($dateFormat:String!)
 {ethereum(network:bsc){
   smartContractCalls(
@@ -175,8 +186,9 @@
     smartContractAddress:{is:"0xbcfccbde45ce874adcb698cc183debcf17952812"}
   )
   {
-date:date{date(format:$dateFormat)}
+date:date{dt:date(format:$dateFormat)}
    transactions: count(uniq:callers)
+    
     }
   }}
 
@@ -191,24 +203,28 @@ date:date{date(format:$dateFormat)}
    },
   },
   "series": {
-   "0": {
+   "3": {
     "color": "#28a745"
    },
+  },
   "seriesType": "area"
  },
  "dataOptions": [
   {
-   "title": "Date",
-    "type": "date",
-   "path": "date.date"
-  },
+    title: {label: "Date",
+                type: "date",
+              },
+              path: "date.dt",
+            },
   {
-   "title": "# Transactions",
+   "title": "Transactions",
    "path": "transactions"
   }
+ 
  ]
 });
-    query.request({"dateFormat":"%Y-%m-%d"});
+    query.request({dateFormat:
+                  "%Y-%m-%d"});
     })();
 	</script>
   <script>
@@ -490,7 +506,7 @@ dateFormat:"%Y-%m-%d"
 }
 
 `);
-    var wdts = new widgets.chartByTime('#syrup_liquidity', query, 'ethereum.smartContractEvents', {
+    var wdts = new widgets.chartByTime('#syrup_liquidity_activity', query, 'ethereum.smartContractEvents', {
  "title": "Syrup Pools Liquidity Activity",
  "chartOptions": {
   "vAxes": {
