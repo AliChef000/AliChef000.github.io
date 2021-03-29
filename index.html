@@ -65,7 +65,7 @@
 	      </div>	
         <div class="col-md-6">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
-            Daily Trading Volume
+            Daily Trading Volume (USD)
           </div>
           <div id="volume_by_time"></div>
         </div>
@@ -79,7 +79,7 @@
         </div>
 	      <div class="col-md-6">
           <div class="d-flex justify-content-center" style="font-weight: bold;">
-	          Daily Syrup Pool Liquidity Activiey
+	          Daily Syrup Pool Liquidity Activity
           </div>
 	        <div id="syrup_liquidity_activity"></div>
         </div>
@@ -283,7 +283,7 @@ query($dateFormat:String!)
  "chartOptions": {
   "vAxes": {
    "0": {
-    "title": "Trade Amount",
+    "title": "Volume $",
     "scaleType": "linear"
    },
   },
