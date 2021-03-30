@@ -199,7 +199,7 @@
   )
   {
 date:date{dt:date(format:$dateFormat)}
-  Pancake: count(smartContractAddress:{is:"0xbcfccbde45ce874adcb698cc183debcf17952812"})
+  Pancake: count(uniq:txs,smartContractAddress:{is:"0xbcfccbde45ce874adcb698cc183debcf17952812"})
   caller:count(uniq:callers,smartContractAddress:{is:"0xbcfccbde45ce874adcb698cc183debcf17952812"})
     }
   }}
