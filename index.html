@@ -381,7 +381,7 @@ query($dateFormat:String!)
       );
       query.request({
         address:[
-"0x73feaa1eE314F8c655E354234017bE2193C9E24E",
+"0x73feaa1eE314F8c655E354234017bE2193C9E24E", //LP farming pool
 "0xA527a61703D82139F8a06Bc30097cC9CAA2df5A6",
 "0xbd1ec00b0d1cca9d5b28fbe0bb7d664238af2ffa",
 "0x5a805994a2e30ac710e7376ccc0211285bd4dd92",
@@ -502,13 +502,67 @@ dateFormat:"%Y-%m-%d"
     widgets.init('https://graphql.bitquery.io', '', 
     {locale: 'en', theme: 'light'});
     var query = new widgets.query(`
-    query ($dateFormat:String!)
+    query ($dateFormat:String!,
+	$address: [String!])
     {
   ethereum(network: bsc) {
     smartContractEvents(
-      smartContractAddress: {in: 
-[
-"0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+      smartContractAddress: {in: $address}
+      smartContractEvent: {in:["Deposit","Withdraw"]}
+      date: {since: "2020-11-01"}
+    ) {
+      date:date{dt:date(format:$dateFormat)}
+     Mint:count(uniq: callers,smartContractEvent:{is:"Deposit"})
+     Burn:count(uniq: callers,smartContractEvent:{is:"Withdraw"})
+    }
+  }
+}
+
+`);
+    var wdts = new widgets.chartByTime('#syrup_liquidity_activity', query, 'ethereum.smartContractEvents', {
+ "title": "Syrup Pools Liquidity Activity",
+ "chartOptions": {
+  "vAxes": {
+   "0": {
+    "title": "Uniq Address",
+    "scaleType": "linear"
+   },
+  },
+  "series": {
+   "1": {
+    "color": "#28a745"
+   },
+   "0": {
+    "color": "#ffc107"
+   },
+   "2": {
+    "color": "#9bc2cf"
+   }
+  },
+  "seriesType": "area"
+ },
+ "dataOptions": [
+ {
+              title: {
+                label: "Date",
+                type: "date",
+              },
+              path: "date.dt",
+            },
+  {
+   "title": "Liquidity Adder",
+   "path": "Mint"
+  },
+  {
+   "title": "Liquidity Remover",
+   "path": "Burn"
+  }
+ 
+ ]
+});
+    query.request({dateFormat: "%Y-%m-%d",
+address:[
+"0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", 
 "0xEB8Fd597921E3Dd37B0F103a2625F855e2C9b9B5",
 "0xABFd8d1942628124aB971937154f826Bce86DcbC",
 "0x526d3c204255f807C95a99b69596f2f9f72345e5",
@@ -592,60 +646,7 @@ dateFormat:"%Y-%m-%d"
 "0x07a0A5B67136d40F4d7d95Bc8e0583bafD7A81b9",
 "0x21A9A53936E812Da06B7623802DEc9A1f94ED23a",
 "0xe7f9A439Aa7292719aC817798DDd1c4D35934aAF",
-"0xcec2671C81a0Ecf7F8Ee796EFa6DBDc5Cb062693"]}
-      smartContractEvent: {in:["Deposit","Withdraw"]}
-      date: {since: "2020-11-01"}
-    ) {
-      date:date{dt:date(format:$dateFormat)}
-     Mint:count(uniq: callers,smartContractEvent:{is:"Deposit"})
-     Burn:count(uniq: callers,smartContractEvent:{is:"Withdraw"})
-    }
-  }
-}
-
-`);
-    var wdts = new widgets.chartByTime('#syrup_liquidity_activity', query, 'ethereum.smartContractEvents', {
- "title": "Syrup Pools Liquidity Activity",
- "chartOptions": {
-  "vAxes": {
-   "0": {
-    "title": "Uniq Address",
-    "scaleType": "linear"
-   },
-  },
-  "series": {
-   "1": {
-    "color": "#28a745"
-   },
-   "0": {
-    "color": "#ffc107"
-   },
-   "2": {
-    "color": "#9bc2cf"
-   }
-  },
-  "seriesType": "area"
- },
- "dataOptions": [
- {
-              title: {
-                label: "Date",
-                type: "date",
-              },
-              path: "date.dt",
-            },
-  {
-   "title": "Liquidity Adder",
-   "path": "Mint"
-  },
-  {
-   "title": "Liquidity Remover",
-   "path": "Burn"
-  }
- 
- ]
-});
-    query.request({dateFormat: "%Y-%m-%d"
+"0xcec2671C81a0Ecf7F8Ee796EFa6DBDc5Cb062693"]
 	});
     })();
   </script>
