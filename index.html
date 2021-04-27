@@ -137,8 +137,8 @@
       query ($dateFormat: String!)  
       {ethereum(network:bsc){
   dexTrades(date:{since:"2020-09-24"}){
-  Pancake:count(uniq:senders,exchangeName:{is:"Pancake"})
-  Others:count(uniq:senders,exchangeName:{not:"Pancake"})
+  Pancake:count(uniq:senders,exchangeName:{is:"Pancake v2"})
+  Others:count(uniq:senders,exchangeName:{not:"Pancake v2"})
     date:date{dt:date(format:$dateFormat)}
    gasValue
   
@@ -184,7 +184,7 @@
               path: "date.dt",
             },
             {
-              title: "Pancake",
+              title: "Pancake V2",
               path: "Pancake"
             },
             {
@@ -223,7 +223,7 @@ date:date{dt:date(format:$dateFormat)}
  "chartOptions": {
   "vAxes": {
    "0": {
-    "title": "Pancake Transactions",
+    "title": "Pancake V2 Transactions",
     "scaleType": "linear"
    },
    "1": {
@@ -262,7 +262,7 @@ date:date{dt:date(format:$dateFormat)}
             },
   
   {
-   "title": "Pancake Transactions",
+   "title": "Pancake V2 Transactions",
    "path": "Pancake",
   },
   {
@@ -283,7 +283,7 @@ date:date{dt:date(format:$dateFormat)}
 
 query($dateFormat:String!)
 {ethereum(network:bsc){
-  dexTrades(exchangeName:{is:"Pancake"}
+  dexTrades(exchangeName:{is:"Pancake v2"}
   date:{since:"2020-12-01"}){
     date:date{date(format:$dateFormat)}
     tradeAmount(in:USD)
