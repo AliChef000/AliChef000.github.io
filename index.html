@@ -691,7 +691,8 @@ address:[
       query ($dateFormat:String!){
   ethereum(network:bsc) {
     dexTrades(
-    date: {after: "2020-12-01"}) {
+ exchangeName:{is:"Pancake v2"},
+    date: {after: "2021-04-20"}) {
       
 			date:date{dt:date(format:$dateFormat)}
       
