@@ -205,8 +205,7 @@
     widgets.init('https://graphql.bitquery.io', '', {locale: 'en', theme: 'light'});
     var query = new widgets.query(`
 
-
-    query($dateFormat:String!)
+  query($dateFormat:String!)
 {ethereum(network:bsc){
   smartContractCalls(
     date:{since:"2021-04-20"},
@@ -214,7 +213,7 @@
   {
 date:date{dt:date(format:$dateFormat)}
   Pancake: count(uniq:txs,smartContractAddress:{is:"0x2AD2C5314028897AEcfCF37FD923c079BeEb2C56"})
-  caller:count(uniq:callers,smartContractAddress:{is:"0x2AD2C5314028897AEcfCF37FD923c079BeEb2C56"})
+  caller:count(uniq:callers,smartContractAddress:{not:"0x2AD2C5314028897AEcfCF37FD923c079BeEb2C56"})
     }
   }}
 
